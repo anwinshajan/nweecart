@@ -18,7 +18,7 @@
 
         /* Views */
         #main-view { display: block; }
-        #address-view, #payment-view { display: none; padding: 3rem 1rem; max-width: 600px; margin: 0 auto; text-align: center; min-height: 80vh;}
+        #address-view, #payment-view, #invoice-view { display: none; padding: 3rem 1rem; max-width: 600px; margin: 0 auto; text-align: center; min-height: 80vh;}
 
         /* Hero Section */
         .hero { background: #fff; text-align: center; padding: 3rem 1rem; border-bottom: 1px solid #ddd; }
@@ -46,6 +46,8 @@
         .btn-selected { background-color: #ff6b6b; }
         .btn-pay { background-color: #25D366; font-size: 1.2rem; padding: 1rem; margin-top: 1.5rem; }
         .btn-submit { background-color: #ff6b6b; font-size: 1.2rem; padding: 1rem; margin-top: 1rem; width: 100%; }
+        .btn-confirm { background-color: #1a1a1a; font-size: 1.1rem; padding: 1rem; width: 100%; margin-top: 0.5rem;}
+        .btn-confirm:hover { background-color: #333; }
         .back-btn { background: #333; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 1rem; }
 
         /* Floating Cart Bar */
@@ -70,6 +72,12 @@
         .close-modal { position: absolute; top: 15px; right: 25px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 2001; transition: 0.3s;}
         .close-modal:hover { color: #ff6b6b; }
 
+        /* Invoice Styles */
+        .invoice-box { background: #fff; padding: 2rem; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); text-align: left; margin-bottom: 2rem;}
+        .invoice-box h2 { text-align: center; color: #1a1a1a; letter-spacing: 1px; margin-bottom: 0.5rem;}
+        .invoice-box hr { border: 0; border-top: 1px solid #ddd; margin: 1.5rem 0; }
+        .invoice-details p { margin-bottom: 0.5rem; font-size: 1.05rem;}
+        
         /* Contact Section */
         .contact-section { background-color: #1a1a1a; color: #fff; text-align: center; padding: 3rem 1rem; }
         .contact-section h2 { margin-bottom: 1rem; color: #ff6b6b; }
@@ -78,11 +86,19 @@
         .call-btn { background: #007bff; }
 
         footer { text-align: center; padding: 1.5rem; background: #111; color: #777; font-size: 0.9rem; }
+
+        /* Print styles to only print the invoice */
+        @media print {
+            body * { visibility: hidden; }
+            #invoice-view, #invoice-view * { visibility: visible; }
+            #invoice-view { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
-    <header>
+    <header class="no-print">
         <div class="logo" onclick="goHome()">Nwee <span>Cart</span></div>
         <nav>
             <a onclick="goHome()">Home</a>
@@ -90,7 +106,7 @@
         </nav>
     </header>
 
-    <div id="main-view">
+    <div id="main-view" class="no-print">
         <section class="hero">
             <h1>Step Into Style with Nwee Cart</h1>
             <p>Mix and match your favorite kicks.</p>
@@ -109,12 +125,12 @@
         </div>
     </div>
 
-    <div id="imageModal" class="modal" onclick="closeModal()">
+    <div id="imageModal" class="modal no-print" onclick="closeModal()">
         <span class="close-modal">&times;</span>
         <img class="modal-content" id="expandedImg" onclick="event.stopPropagation()">
     </div>
 
-    <div id="address-view">
+    <div id="address-view" class="no-print">
         <button class="back-btn" onclick="goHome()">&larr; Back to Shop</button>
         <h2>Shipping Details</h2>
         <p>Where should we send your shoes?</p>
@@ -130,6 +146,10 @@
                     <input type="tel" name="phone" class="form-control" required>
                 </div>
                 <div class="form-group">
+                    <label>Shoe Size(s)</label>
+                    <input type="text" name="size" class="form-control" placeholder="e.g., UK 8, UK 9" required>
+                </div>
+                <div class="form-group">
                     <label>Full Delivery Address</label>
                     <textarea name="address" class="form-control" required></textarea>
                 </div>
@@ -142,7 +162,7 @@
         </div>
     </div>
 
-    <div id="payment-view">
+    <div id="payment-view" class="no-print">
         <h2>Secure Checkout</h2>
         <div class="box-container" style="text-align: center;">
             <h3 id="payment-summary" style="margin-bottom: 1rem; color: #555;">Total: ₹0</h3>
@@ -152,11 +172,44 @@
                 <img id="qr-code" src="" alt="UPI QR Code">
             </div>
             <br>
-            <a id="pay-now-btn" href="#" class="btn btn-pay">Proceed to Pay via UPI App</a>
+            <a id="pay-now-btn" href="#" class="btn btn-pay" target="_blank">1. Proceed to Pay via UPI App</a>
+
+            <p style="color: #ff6b6b; font-weight: bold; margin-top: 1.5rem; font-size: 0.95rem;">
+                * Note: After the payment, our team will contact you as soon as possible (maximum within 24 hours).
+            </p>
+
+            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #ddd;">
+            
+            <p style="font-weight: bold; margin-bottom: 1rem;">Finished paying?</p>
+            <button id="confirm-payment-btn" class="btn btn-confirm" onclick="confirmPayment()">2. Yes, I have completed the payment</button>
         </div>
     </div>
 
-    <section id="contact" class="contact-section">
+    <div id="invoice-view">
+        <div class="invoice-box">
+            <h2>NWEE CART</h2>
+            <h3 style="text-align:center; color:#25D366; margin-bottom: 1rem;">Order Confirmed</h3>
+            <p style="text-align:center; color:#777; font-size: 0.9rem;">Thank you for your purchase!</p>
+            <hr>
+            <div class="invoice-details">
+                <p><strong>Order ID:</strong> <span id="inv-order-id"></span></p>
+                <p><strong>Date:</strong> <span id="inv-date"></span></p>
+                <p><strong>Customer Name:</strong> <span id="inv-name"></span></p>
+                <p><strong>Shoe Styles (Pages):</strong> <span id="inv-items"></span></p>
+                <p><strong>Selected Size(s):</strong> <span id="inv-size"></span></p>
+                <p><strong>Delivery Address:</strong> <span id="inv-address"></span></p>
+                <hr>
+                <p style="font-size: 1.2rem;"><strong>Total Paid: <span style="color:#ff6b6b;">₹<span id="inv-total"></span></span></strong></p>
+            </div>
+            <hr>
+            <p style="text-align:center; font-size: 0.85rem; color: #555;">Our team will contact you within 24 hours regarding your dispatch.</p>
+        </div>
+        
+        <button class="btn btn-select no-print" onclick="window.print()" style="margin-bottom: 1rem;">Print / Save PDF Invoice</button>
+        <button class="btn btn-pay no-print" style="width: 100%;" onclick="sendInvoiceToWhatsApp()">Send Confirmation to WhatsApp</button>
+    </div>
+
+    <section id="contact" class="contact-section no-print">
         <h2>Contact Us</h2>
         <p>Have questions or need help with your order? Reach out to us!</p>
         <div class="contact-links">
@@ -165,10 +218,9 @@
         </div>
     </section>
 
-    <footer>&copy; 2026 Nwee Cart. All rights reserved.</footer>
+    <footer class="no-print">&copy; 2026 Nwee Cart. All rights reserved.</footer>
 
     <script>
-        // Google Script URL safely included
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2KGCerlj0ddOxKs6gWEsFHQ4KC5EFES4pHHeVDadUqXOY-Rc41Xaqo9ClZUteLIge/exec"; 
         
         const singlePrice = 899;
@@ -179,20 +231,22 @@
         const transactionNote = "Shoepair";
 
         let selectedItems = [];
+        let customerFormData = null; 
+        let globalOrderId = '';
+        let globalTotalAmount = 0;
+        let globalSelectedPages = '';
 
         const productGrid = document.getElementById('product-grid');
         
-        // Dynamically generating all the pairs of shoes, starting from image 1 up to 141
+        // Generate products 1 to 141
         for (let i = 1; i <= 141; i++) {
             const card = document.createElement('div');
             card.className = 'product-card';
             card.id = `card-${i}`;
             
-            // This pads the number to be exactly 5 digits (e.g., "1" becomes "00001")
             const paddedNumber = i.toString().padStart(5, '0');
             const imgSrc = `shoes/combo%201599-compressed_${paddedNumber}.jpg`;
             
-            // Added onclick event to open the popup when the image is clicked
             card.innerHTML = `
                 <img src="${imgSrc}" alt="Style #${i}" loading="lazy" onclick="openModal('${imgSrc}')" title="Click to enlarge" onerror="this.src='https://via.placeholder.com/260x260/eee/999?text=Image+Missing'">
                 <div class="product-info">
@@ -204,17 +258,14 @@
             productGrid.appendChild(card);
         }
 
-        // --- NEW: Image Modal Functions ---
+        // Image Modal
         function openModal(imgSrc) {
             document.getElementById('expandedImg').src = imgSrc;
             document.getElementById('imageModal').style.display = 'block';
         }
+        function closeModal() { document.getElementById('imageModal').style.display = 'none'; }
 
-        function closeModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-        // ----------------------------------
-
+        // Selection Logic
         function toggleSelection(pageId) {
             const card = document.getElementById(`card-${pageId}`);
             const btn = document.getElementById(`btn-${pageId}`);
@@ -223,14 +274,12 @@
             if (index > -1) {
                 selectedItems.splice(index, 1);
                 card.classList.remove('selected');
-                btn.classList.remove('btn-selected');
-                btn.classList.add('btn-select');
+                btn.classList.remove('btn-selected'); btn.classList.add('btn-select');
                 btn.innerText = "Select This Pair";
             } else {
                 selectedItems.push(pageId);
                 card.classList.add('selected');
-                btn.classList.remove('btn-select');
-                btn.classList.add('btn-selected');
+                btn.classList.remove('btn-select'); btn.classList.add('btn-selected');
                 btn.innerText = "✓ Selected";
             }
             updateCartUI();
@@ -246,20 +295,19 @@
         function updateCartUI() {
             const cartBar = document.getElementById('cart-bar');
             const cartDetails = document.getElementById('cart-details');
-            const count = selectedItems.length;
-            
-            if (count > 0) {
-                cartDetails.innerText = `${count} Pairs Selected | Total: ₹${calculateTotal()}`;
+            if (selectedItems.length > 0) {
+                cartDetails.innerText = `${selectedItems.length} Pairs Selected | Total: ₹${calculateTotal()}`;
                 cartBar.classList.add('active');
             } else {
                 cartBar.classList.remove('active');
             }
         }
 
-        // Navigation Functions
+        // Navigation
         function goHome() {
             document.getElementById('address-view').style.display = 'none';
             document.getElementById('payment-view').style.display = 'none';
+            document.getElementById('invoice-view').style.display = 'none';
             document.getElementById('main-view').style.display = 'block';
             window.scrollTo(0,0);
         }
@@ -286,42 +334,62 @@
             window.scrollTo(0,0);
         }
 
-        // Handle Address Form Submission to Google Sheets
+        // Address Form Submit (Saves data locally)
         const form = document.getElementById('address-form');
         form.addEventListener('submit', e => {
             e.preventDefault();
+            customerFormData = new FormData(form);
             
-            if(GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_SCRIPT_URL_HERE") {
-                alert("Please add your Google Script URL in the code to save addresses!");
-                showPaymentScreen(); // Proceed anyway for testing purposes
-                return;
-            }
+            // Appends the size information directly into the Items column for Google Sheets
+            const itemsWithSize = 'Pages: ' + selectedItems.join(', ') + ' | Size: ' + customerFormData.get('size');
+            customerFormData.append('items', itemsWithSize);
+            customerFormData.append('total', calculateTotal());
 
-            const btn = document.getElementById('submit-btn');
-            const originalText = btn.innerText;
-            btn.innerText = 'Saving Address...';
+            showPaymentScreen();
+        });
+
+        // Confirm Payment & Generate Invoice
+        function confirmPayment() {
+            if(!customerFormData) return;
+
+            const btn = document.getElementById('confirm-payment-btn');
+            btn.innerText = 'Verifying & Generating Invoice...';
             btn.disabled = true;
 
-            // Gather Form Data
-            const formData = new FormData(form);
-            formData.append('items', 'Pages: ' + selectedItems.join(', '));
-            formData.append('total', calculateTotal());
+            globalTotalAmount = calculateTotal();
+            globalSelectedPages = selectedItems.join(', ');
+            globalOrderId = 'NWEE-' + Math.floor(100000 + Math.random() * 900000); // Random 6 digit order ID
 
             // Send to Google Sheets
-            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: formData })
+            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: customerFormData })
                 .then(response => {
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                    showPaymentScreen(); // Move to payment after saving
+                    displayInvoice();
                 })
                 .catch(error => {
                     console.error('Error!', error.message);
-                    alert("There was an error saving your address, but you can still pay.");
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                    showPaymentScreen();
+                    displayInvoice(); // Show invoice anyway so customer isn't stuck
                 });
-        });
+        }
+
+        function displayInvoice() {
+            document.getElementById('payment-view').style.display = 'none';
+            document.getElementById('invoice-view').style.display = 'block';
+            window.scrollTo(0,0);
+
+            // Populate Invoice Data
+            document.getElementById('inv-order-id').innerText = globalOrderId;
+            document.getElementById('inv-date').innerText = new Date().toLocaleString();
+            document.getElementById('inv-name').innerText = customerFormData.get('name');
+            document.getElementById('inv-items').innerText = globalSelectedPages;
+            document.getElementById('inv-size').innerText = customerFormData.get('size');
+            document.getElementById('inv-address').innerText = customerFormData.get('address') + ' - ' + customerFormData.get('pincode');
+            document.getElementById('inv-total').innerText = globalTotalAmount;
+        }
+
+        function sendInvoiceToWhatsApp() {
+            const waMessage = `Hi Nwee Cart! I have completed my payment of ₹${globalTotalAmount}. \n\n*Order Details:*\nOrder ID: ${globalOrderId}\nStyles (Pages): ${globalSelectedPages}\nSize(s): ${customerFormData.get('size')}\n\nPlease confirm my dispatch!`;
+            window.location.href = `https://wa.me/918590757297?text=${encodeURIComponent(waMessage)}`;
+        }
     </script>
 </body>
 </html>
