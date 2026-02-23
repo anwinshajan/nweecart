@@ -4,11 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nwee Cart | Premium Shoe Store</title>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DJZXB8R3D8"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-DJZXB8R3D8');
+    </script>
+
     <style>
         /* General Reset & Typography */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* UPDATED: Urban Dot Pattern Background */
+        /* Urban Dot Pattern Background */
         body { 
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             background-color: #f4f5f7; 
@@ -28,7 +38,7 @@
         #main-view { display: block; }
         #address-view, #payment-view, #invoice-view { display: none; padding: 3rem 1rem; max-width: 600px; margin: 0 auto; text-align: center; min-height: 80vh;}
 
-        /* UPDATED: Premium Dark Hero Section */
+        /* Premium Dark Hero Section */
         .hero { 
             background: linear-gradient(135deg, #111 0%, #2a2a2a 100%); 
             color: #fff;
@@ -45,7 +55,7 @@
         .section-title { text-align: center; margin-bottom: 2.5rem; font-size: 2.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2.5rem; }
         
-        /* UPDATED: Floating Product Card */
+        /* Floating Product Card */
         .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease; text-align: center; border: 3px solid transparent; display: flex; flex-direction: column; justify-content: space-between;}
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
         .product-card.selected { border-color: #ff6b6b; transform: scale(1.02); box-shadow: 0 8px 25px rgba(255,107,107,0.3); }
