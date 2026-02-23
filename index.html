@@ -157,7 +157,7 @@
     <footer>&copy; 2026 Nwee Cart. All rights reserved.</footer>
 
     <script>
-        // --- IMPORTANT: PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE ---
+        // Google Script URL remains safe and perfectly connected
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2KGCerlj0ddOxKs6gWEsFHQ4KC5EFES4pHHeVDadUqXOY-Rc41Xaqo9ClZUteLIge/exec"; 
         
         const singlePrice = 899;
@@ -169,32 +169,27 @@
 
         let selectedItems = [];
 
-        // 5 Sample Catalog Items
-        const sampleCatalog = [
-            { page: 2, name: "PUMA Classic Black Boots", img: "https://via.placeholder.com/260x260/1a1a1a/ffffff?text=PUMA+Boots" },
-            { page: 6, name: "Nike Air Jordan Red/Black", img: "https://via.placeholder.com/260x260/ff0000/ffffff?text=Air+Jordan+Red" },
-            { page: 53, name: "Campus Suede Black/White", img: "https://via.placeholder.com/260x260/000000/ffffff?text=Campus+Black" },
-            { page: 68, name: "Adidas Samba Classic", img: "https://via.placeholder.com/260x260/ffffff/000000?text=Samba+Classic" },
-            { page: 86, name: "Converse All Star Green", img: "https://via.placeholder.com/260x260/28a745/ffffff?text=Green+High+Tops" }
-        ];
-
         const productGrid = document.getElementById('product-grid');
         
-        // Generate products
-        sampleCatalog.forEach(product => {
+        // Dynamically generating all 140 pairs of shoes
+        for (let i = 2; i <= 141; i++) {
             const card = document.createElement('div');
             card.className = 'product-card';
-            card.id = `card-${product.page}`;
+            card.id = `card-${i}`;
+            
+            // This points correctly to your 'shoes' folder and handles the spaces in your filenames
+            const imgSrc = `shoes/combo%201599-compressed_${i}.jpg`;
+            
             card.innerHTML = `
-                <img src="${product.img}" alt="${product.name}">
+                <img src="${imgSrc}" alt="Style #${i}" loading="lazy" onerror="this.src='https://via.placeholder.com/260x260/eee/999?text=Image+Missing'">
                 <div class="product-info">
-                    <div class="product-title">${product.name}</div>
-                    <div class="product-page">Style Ref: Page ${product.page}</div>
+                    <div class="product-title">Style #${i}</div>
+                    <div class="product-page">Style Ref: Page ${i}</div>
                 </div>
-                <button type="button" class="btn btn-select" id="btn-${product.page}" onclick="toggleSelection(${product.page})">Select This Pair</button>
+                <button type="button" class="btn btn-select" id="btn-${i}" onclick="toggleSelection(${i})">Select This Pair</button>
             `;
             productGrid.appendChild(card);
-        });
+        }
 
         function toggleSelection(pageId) {
             const card = document.getElementById(`card-${pageId}`);
