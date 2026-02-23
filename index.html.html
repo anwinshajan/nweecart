@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nwee Cart | Premium Shoe Store</title>
+    <style>
+        /* General Reset & Typography */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333; }
+        
+        /* Navigation Bar */
+        header { background-color: #1a1a1a; color: #fff; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; cursor: pointer; }
+        .logo span { color: #ff6b6b; }
+        nav a { color: #fff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; cursor: pointer;}
+        nav a:hover { color: #ff6b6b; }
+
+        /* Views */
+        #main-view { display: block; }
+        #address-view, #payment-view { display: none; padding: 3rem 1rem; max-width: 600px; margin: 0 auto; text-align: center; min-height: 80vh;}
+
+        /* Hero Section */
+        .hero { background: #fff; text-align: center; padding: 3rem 1rem; border-bottom: 1px solid #ddd; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; color: #666; margin-bottom: 1rem; }
+        .highlight { color: #ff6b6b; font-weight: bold; font-size: 1.3rem;}
+
+        /* Product Grid */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem 6rem 1rem; }
+        .section-title { text-align: center; margin-bottom: 2rem; font-size: 2rem; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem; }
+        
+        /* Product Card */
+        .product-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s ease, border 0.2s; text-align: center; border: 3px solid transparent; display: flex; flex-direction: column; justify-content: space-between;}
+        .product-card.selected { border-color: #ff6b6b; transform: scale(1.02); box-shadow: 0 8px 16px rgba(255,107,107,0.2); }
+        .product-card img { width: 100%; height: 260px; object-fit: cover; background-color: #eee; }
+        .product-info { padding: 1rem; }
+        .product-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .product-page { font-size: 0.9rem; color: #888; margin-bottom: 0.5rem; }
+        
+        /* Buttons */
+        .btn { display: inline-block; width: 90%; margin: 0.5rem auto 1rem auto; padding: 0.7rem; text-decoration: none; border-radius: 5px; font-weight: bold; color: #fff; border: none; cursor: pointer; transition: background 0.3s; font-size: 1rem;}
+        .btn-select { background-color: #333; }
+        .btn-select:hover { background-color: #555; }
+        .btn-selected { background-color: #ff6b6b; }
+        .btn-pay { background-color: #25D366; font-size: 1.2rem; padding: 1rem; margin-top: 1.5rem; }
+        .btn-submit { background-color: #ff6b6b; font-size: 1.2rem; padding: 1rem; margin-top: 1rem; width: 100%; }
+        .back-btn { background: #333; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 1rem; }
+
+        /* Floating Cart Bar */
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 2px solid #ff6b6b; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); transform: translateY(100%); transition: transform 0.3s ease; z-index: 1000;}
+        .cart-bar.active { transform: translateY(0); }
+        .cart-details { font-size: 1.2rem; font-weight: bold; }
+        .checkout-btn { background: #ff6b6b; color: #fff; padding: 0.8rem 2rem; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 1.1rem;}
+
+        /* Form & Payment Styles */
+        .box-container { background: #fff; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 1.5rem; text-align: left; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
+        .form-control { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; font-family: inherit;}
+        textarea.form-control { resize: vertical; min-height: 80px; }
+        
+        .qr-container { margin: 1.5rem 0; padding: 1rem; background: #fafafa; border: 1px dashed #ccc; border-radius: 8px; display: inline-block; text-align: center; width: 100%;}
+        .qr-container img { width: 200px; height: 200px; margin: 0 auto; display: block;}
+
+        /* Contact Section */
+        .contact-section { background-color: #1a1a1a; color: #fff; text-align: center; padding: 3rem 1rem; }
+        .contact-section h2 { margin-bottom: 1rem; color: #ff6b6b; }
+        .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;}
+        .contact-btn { background: #25D366; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 5px; font-weight: bold;}
+        .call-btn { background: #007bff; }
+
+        footer { text-align: center; padding: 1.5rem; background: #111; color: #777; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="goHome()">Nwee <span>Cart</span></div>
+        <nav>
+            <a onclick="goHome()">Home</a>
+            <a href="#contact">Contact Us</a>
+        </nav>
+    </header>
+
+    <div id="main-view">
+        <section class="hero">
+            <h1>Step Into Style with Nwee Cart</h1>
+            <p>Mix and match your favorite kicks.</p>
+            <p class="highlight">1 Pair = ₹899 &nbsp;|&nbsp; Any 2 Pairs = ₹1599</p>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title">Select Your Shoes</h2>
+            <div class="product-grid" id="product-grid">
+                </div>
+        </section>
+
+        <div class="cart-bar" id="cart-bar">
+            <div class="cart-details" id="cart-details">0 Items | Total: ₹0</div>
+            <button class="checkout-btn" onclick="goToAddress()">Checkout</button>
+        </div>
+    </div>
+
+    <div id="address-view">
+        <button class="back-btn" onclick="goHome()">&larr; Back to Shop</button>
+        <h2>Shipping Details</h2>
+        <p>Where should we send your shoes?</p>
+        
+        <div class="box-container">
+            <form id="address-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (WhatsApp preferred)</label>
+                    <input type="tel" name="phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Full Delivery Address</label>
+                    <textarea name="address" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Pincode</label>
+                    <input type="text" name="pincode" class="form-control" required>
+                </div>
+                <button type="submit" id="submit-btn" class="btn btn-submit">Save Address & Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="payment-view">
+        <h2>Secure Checkout</h2>
+        <div class="box-container" style="text-align: center;">
+            <h3 id="payment-summary" style="margin-bottom: 1rem; color: #555;">Total: ₹0</h3>
+            <p style="color: #777; font-size: 0.9rem; margin-bottom: 1rem;">Scan the QR Code using any UPI app (GPay, PhonePe, Paytm) or click the Pay Now button if you are on your mobile phone.</p>
+            
+            <div class="qr-container">
+                <img id="qr-code" src="" alt="UPI QR Code">
+            </div>
+            <br>
+            <a id="pay-now-btn" href="#" class="btn btn-pay">Proceed to Pay via UPI App</a>
+        </div>
+    </div>
+
+    <section id="contact" class="contact-section">
+        <h2>Contact Us</h2>
+        <p>Have questions or need help with your order? Reach out to us!</p>
+        <div class="contact-links">
+            <a href="https://wa.me/918590757297" class="contact-btn" target="_blank">WhatsApp Us</a>
+            <a href="tel:+918590757297" class="contact-btn call-btn">Call +91 85907 57297</a>
+        </div>
+    </section>
+
+    <footer>&copy; 2026 Nwee Cart. All rights reserved.</footer>
+
+    <script>
+        // --- IMPORTANT: PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE ---
+        const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE"; 
+        
+        const singlePrice = 899;
+        const comboPrice = 1599; 
+        
+        const upiID = "8590757297@fam";
+        const payeeName = "Anwin";
+        const transactionNote = "Shoepair";
+
+        let selectedItems = [];
+
+        // 5 Sample Catalog Items
+        const sampleCatalog = [
+            { page: 2, name: "PUMA Classic Black Boots", img: "https://via.placeholder.com/260x260/1a1a1a/ffffff?text=PUMA+Boots" },
+            { page: 6, name: "Nike Air Jordan Red/Black", img: "https://via.placeholder.com/260x260/ff0000/ffffff?text=Air+Jordan+Red" },
+            { page: 53, name: "Campus Suede Black/White", img: "https://via.placeholder.com/260x260/000000/ffffff?text=Campus+Black" },
+            { page: 68, name: "Adidas Samba Classic", img: "https://via.placeholder.com/260x260/ffffff/000000?text=Samba+Classic" },
+            { page: 86, name: "Converse All Star Green", img: "https://via.placeholder.com/260x260/28a745/ffffff?text=Green+High+Tops" }
+        ];
+
+        const productGrid = document.getElementById('product-grid');
+        
+        // Generate products
+        sampleCatalog.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.id = `card-${product.page}`;
+            card.innerHTML = `
+                <img src="${product.img}" alt="${product.name}">
+                <div class="product-info">
+                    <div class="product-title">${product.name}</div>
+                    <div class="product-page">Style Ref: Page ${product.page}</div>
+                </div>
+                <button type="button" class="btn btn-select" id="btn-${product.page}" onclick="toggleSelection(${product.page})">Select This Pair</button>
+            `;
+            productGrid.appendChild(card);
+        });
+
+        function toggleSelection(pageId) {
+            const card = document.getElementById(`card-${pageId}`);
+            const btn = document.getElementById(`btn-${pageId}`);
+            const index = selectedItems.indexOf(pageId);
+            
+            if (index > -1) {
+                selectedItems.splice(index, 1);
+                card.classList.remove('selected');
+                btn.classList.remove('btn-selected');
+                btn.classList.add('btn-select');
+                btn.innerText = "Select This Pair";
+            } else {
+                selectedItems.push(pageId);
+                card.classList.add('selected');
+                btn.classList.remove('btn-select');
+                btn.classList.add('btn-selected');
+                btn.innerText = "✓ Selected";
+            }
+            updateCartUI();
+        }
+
+        function calculateTotal() {
+            const count = selectedItems.length;
+            const pairs = Math.floor(count / 2);
+            const singles = count % 2;
+            return (pairs * comboPrice) + (singles * singlePrice);
+        }
+
+        function updateCartUI() {
+            const cartBar = document.getElementById('cart-bar');
+            const cartDetails = document.getElementById('cart-details');
+            const count = selectedItems.length;
+            
+            if (count > 0) {
+                cartDetails.innerText = `${count} Pairs Selected | Total: ₹${calculateTotal()}`;
+                cartBar.classList.add('active');
+            } else {
+                cartBar.classList.remove('active');
+            }
+        }
+
+        // Navigation Functions
+        function goHome() {
+            document.getElementById('address-view').style.display = 'none';
+            document.getElementById('payment-view').style.display = 'none';
+            document.getElementById('main-view').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function goToAddress() {
+            if(selectedItems.length === 0) return;
+            document.getElementById('main-view').style.display = 'none';
+            document.getElementById('payment-view').style.display = 'none';
+            document.getElementById('address-view').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function showPaymentScreen() {
+            const totalAmount = calculateTotal();
+            const upiString = `upi://pay?pa=${upiID}&pn=${payeeName}&am=${totalAmount}&cu=INR&tn=${transactionNote}`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+            
+            document.getElementById('payment-summary').innerText = `Total to Pay: ₹${totalAmount} (For ${selectedItems.length} pairs)`;
+            document.getElementById('qr-code').src = qrUrl;
+            document.getElementById('pay-now-btn').href = upiString;
+
+            document.getElementById('address-view').style.display = 'none';
+            document.getElementById('payment-view').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        // Handle Address Form Submission to Google Sheets
+        const form = document.getElementById('address-form');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            if(GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_SCRIPT_URL_HERE") {
+                alert("Please add your Google Script URL in the code to save addresses!");
+                showPaymentScreen(); // Proceed anyway for testing purposes
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            const originalText = btn.innerText;
+            btn.innerText = 'Saving Address...';
+            btn.disabled = true;
+
+            // Gather Form Data
+            const formData = new FormData(form);
+            formData.append('items', 'Pages: ' + selectedItems.join(', '));
+            formData.append('total', calculateTotal());
+
+            // Send to Google Sheets
+            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: formData })
+                .then(response => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    showPaymentScreen(); // Move to payment after saving
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    alert("There was an error saving your address, but you can still pay.");
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    showPaymentScreen();
+                });
+        });
+    </script>
+</body>
+</html>
