@@ -34,7 +34,7 @@
         /* Product Card */
         .product-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s ease, border 0.2s; text-align: center; border: 3px solid transparent; display: flex; flex-direction: column; justify-content: space-between;}
         .product-card.selected { border-color: #ff6b6b; transform: scale(1.02); box-shadow: 0 8px 16px rgba(255,107,107,0.2); }
-        .product-card img { width: 100%; height: 260px; object-fit: cover; background-color: #eee; }
+        .product-card img { width: 100%; height: 260px; object-fit: cover; background-color: #eee; cursor: zoom-in; }
         .product-info { padding: 1rem; }
         .product-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
         .product-page { font-size: 0.9rem; color: #888; margin-bottom: 0.5rem; }
@@ -63,6 +63,12 @@
         
         .qr-container { margin: 1.5rem 0; padding: 1rem; background: #fafafa; border: 1px dashed #ccc; border-radius: 8px; display: inline-block; text-align: center; width: 100%;}
         .qr-container img { width: 200px; height: 200px; margin: 0 auto; display: block;}
+
+        /* Image Zoom Modal Styles */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px);}
+        .modal-content { margin: auto; display: block; max-width: 95%; max-height: 90vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);}
+        .close-modal { position: absolute; top: 15px; right: 25px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 2001; transition: 0.3s;}
+        .close-modal:hover { color: #ff6b6b; }
 
         /* Contact Section */
         .contact-section { background-color: #1a1a1a; color: #fff; text-align: center; padding: 3rem 1rem; }
@@ -101,6 +107,11 @@
             <div class="cart-details" id="cart-details">0 Items | Total: ₹0</div>
             <button class="checkout-btn" onclick="goToAddress()">Checkout</button>
         </div>
+    </div>
+
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="expandedImg" onclick="event.stopPropagation()">
     </div>
 
     <div id="address-view">
@@ -157,7 +168,7 @@
     <footer>&copy; 2026 Nwee Cart. All rights reserved.</footer>
 
     <script>
-        // Google Script URL remains safe and perfectly connected
+        // Google Script URL safely included
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2KGCerlj0ddOxKs6gWEsFHQ4KC5EFES4pHHeVDadUqXOY-Rc41Xaqo9ClZUteLIge/exec"; 
         
         const singlePrice = 899;
@@ -171,17 +182,19 @@
 
         const productGrid = document.getElementById('product-grid');
         
-        // Dynamically generating all 140 pairs of shoes
-        for (let i = 2; i <= 141; i++) {
+        // Dynamically generating all the pairs of shoes, starting from image 1 up to 141
+        for (let i = 1; i <= 141; i++) {
             const card = document.createElement('div');
             card.className = 'product-card';
             card.id = `card-${i}`;
             
-            // This points correctly to your 'shoes' folder and handles the spaces in your filenames
-            const imgSrc = `shoes/combo%201599-compressed_${i}.jpg`;
+            // This pads the number to be exactly 5 digits (e.g., "1" becomes "00001")
+            const paddedNumber = i.toString().padStart(5, '0');
+            const imgSrc = `shoes/combo%201599-compressed_${paddedNumber}.jpg`;
             
+            // Added onclick event to open the popup when the image is clicked
             card.innerHTML = `
-                <img src="${imgSrc}" alt="Style #${i}" loading="lazy" onerror="this.src='https://via.placeholder.com/260x260/eee/999?text=Image+Missing'">
+                <img src="${imgSrc}" alt="Style #${i}" loading="lazy" onclick="openModal('${imgSrc}')" title="Click to enlarge" onerror="this.src='https://via.placeholder.com/260x260/eee/999?text=Image+Missing'">
                 <div class="product-info">
                     <div class="product-title">Style #${i}</div>
                     <div class="product-page">Style Ref: Page ${i}</div>
@@ -190,6 +203,17 @@
             `;
             productGrid.appendChild(card);
         }
+
+        // --- NEW: Image Modal Functions ---
+        function openModal(imgSrc) {
+            document.getElementById('expandedImg').src = imgSrc;
+            document.getElementById('imageModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+        // ----------------------------------
 
         function toggleSelection(pageId) {
             const card = document.getElementById(`card-${pageId}`);
@@ -301,4 +325,3 @@
     </script>
 </body>
 </html>
-
